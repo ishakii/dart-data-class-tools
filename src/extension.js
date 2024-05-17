@@ -1173,7 +1173,7 @@ class DataClassGenerator {
                 case 'IconData':
                     return `IconData(${value}, fontFamily: 'MaterialIcons')`
                 default:
-                    return `${prop.type + '.fromMap('}${value})`;
+                    return `${prop.type + '.fromMap(Map<String, dynamic>.from('}${value}))`;
             }
         }
 
