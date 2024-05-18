@@ -1084,8 +1084,20 @@ class DataClassGenerator {
         for (let p of clazz.properties) {
             if (usesValueGetter && p.isNullable) {
                 method += `    ${ clazz.hasNamedConstructor ? `${ p.name }: ` : '' }${ p.name } != null ? ${ p.name }() : this.${ p.name },\n`;
+            } 
+            if (p.isCollection) {
+              method +=
+                `    ${clazz.hasNamedConstructor ? `${p.name}: ` : ""}${
+                  p.name
+                } != null || this.${p.name} != null\n` +
+                `          ? ${p.isList ? "List" : "Map"}.from(${p.name} ?? this.${
+                  p.name
+                } ?? [])\n` +
+                `          : ${p.name} ?? this.${p.name},\n`;
             } else {
-                method += `    ${ clazz.hasNamedConstructor ? `${ p.name }: ` : '' }${ p.name } ?? this.${ p.name },\n`;
+              method += `    ${clazz.hasNamedConstructor ? `${p.name}: ` : ""}${
+                p.name
+              } ?? this.${p.name},\n`;
             }
         }
 
@@ -1173,7 +1185,7 @@ class DataClassGenerator {
                 case 'IconData':
                     return `IconData(${value}, fontFamily: 'MaterialIcons')`
                 default:
-                    return `${prop.type + '.fromMap('}${value})`;
+                    return `${prop.type + '.fromMap(Map<String, dynamic>.from('}${value}))`;
             }
         }
 
@@ -1183,7 +1195,8 @@ class DataClassGenerator {
             method += `    ${clazz.hasNamedConstructor ? `${p.name}: ` : ''}`;
 
             const value = `map['${p.key}']`;
-            const addNullCheck = !p.isPrimitive && p.isNullable;
+            var addNullCheck = !p.isPrimitive && p.isNullable;
+            addNullCheck = p.isList && p.isNullable;
 
             if (addNullCheck) {
                 method += `${value} != null ? `;
