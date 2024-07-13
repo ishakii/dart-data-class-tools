@@ -1094,7 +1094,7 @@ class DataClassGenerator {
                     } != null || this.${p.name} != null\n` +
                     `          ? ${p.isList ? "List" : "Map"}.from(${
                       p.name
-                    } ?? this.${p.name} ?? [])\n` +
+                    } ?? this.${p.name} ?? ${p.isList ? "[]" : "{}"})\n` +
                     `          : ${p.name} ?? this.${p.name},\n`;
                 }else {
                  method +=
